@@ -1,0 +1,26 @@
+---
+# .cpanel.yml
+# cPanel Git Version Control deployment configuration for the
+# Electryon International Solutions website.
+#
+# Project type: Vite + React + TanStack Start.
+# The production build (`npm run build`) produces:
+#   dist/client/  -> static assets (JS, CSS, images, favicon)
+#   dist/server/  -> SSR / serverless bundle
+#
+# This deployment copies the static client assets into the cPanel
+# deployment directory (public_html by default, or whichever directory
+# is configured in cPanel Git Version Control).
+#
+# No secrets, API keys, passwords, or credentials are stored here.
+deployment:
+  tasks:
+    - export DEPLOYPATH=${DEPLOYPATH:-$HOME/public_html}
+    - test -n "$DEPLOYPATH" || { echo "DEPLOYPATH is not set"; exit 1; }
+    - echo "Deploying to $DEPLOYPATH"
+    - node -v
+    - npm -v
+    - npm install --no-audit --no-fund
+    - npm run build
+    - /bin/rm -rf "$DEPLOYPATH"/*
+    - /bin/cp -R dist/client/* "$DEPLOYPATH"/
